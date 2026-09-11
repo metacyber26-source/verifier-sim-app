@@ -3,112 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VerifierSim - Simulator Verifikator Interaktif</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Verifier & Validator Simulator</title>
+    <!-- Google Fonts & Lucide Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans antialiased">
+<body>
 
-    <!-- Header / Navbar -->
-    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50 px-4 py-3 shadow-md">
-        <div class="max-w-md mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <span class="text-xl">🔍</span>
-                <h1 class="font-bold text-lg text-emerald-400 tracking-wide">VerifierSim</h1>
+    <div class="app-container">
+        <!-- Header / Top Bar -->
+        <header class="app-header">
+            <div class="brand">
+                <i data-lucide="shield-check" class="brand-icon"></i>
+                <span class="brand-title">VerifierSim</span>
             </div>
-            <div class="flex items-center space-x-3 text-xs">
-                <div class="bg-slate-700 px-2.5 py-1 rounded-full text-slate-300">
-                    Skor: <span id="user-score" class="font-bold text-yellow-400">0</span>
+            <div class="stats-badge">
+                <div class="stat-item">
+                    <i data-lucide="zap" class="icon-gold"></i>
+                    <span id="score-val">0</span> XP
                 </div>
-                <div class="bg-emerald-950 border border-emerald-600/50 px-2.5 py-1 rounded-full text-emerald-300">
-                    Lvl: <span id="user-level" class="font-bold">1</span>
+                <div class="stat-item">
+                    <i data-lucide="award" class="icon-purple"></i>
+                    Level <span id="level-val">1</span>
                 </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Main Content Area -->
-    <main class="flex-1 max-w-md w-full mx-auto p-4 space-y-4 pb-12">
-
-        <!-- Progress Bar & Target Level -->
-        <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/60 shadow-sm">
-            <div class="flex justify-between text-xs mb-1 text-slate-400">
-                <span id="level-badge" class="font-semibold text-emerald-400">Level 1: Beginner</span>
-                <span id="progress-text">0 / 100 XP</span>
-            </div>
-            <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
-                <div id="progress-bar" class="bg-emerald-500 h-full w-0% transition-all duration-300"></div>
-            </div>
+        <!-- Progress Bar Baris Atas -->
+        <div class="progress-bar-wrapper">
+            <div class="progress-bar-fill" id="progress-fill" style="width: 10%;"></div>
         </div>
 
-        <!-- Document / Case Card -->
-        <div id="case-card" class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-lg flex flex-col">
-            
-            <!-- Case Header -->
-            <div class="bg-slate-800/90 border-b border-slate-700 p-3.5 flex justify-between items-center">
-                <span id="case-category" class="text-xs font-semibold uppercase tracking-wider bg-slate-700 text-slate-300 px-2 py-0.5 rounded">
-                    Kategori
-                </span>
-                <span id="case-id" class="text-xs text-slate-500 font-mono">ID: #000</span>
+        <!-- Main Card Case Container -->
+        <main class="main-content">
+            <!-- Category & Difficulty Pill -->
+            <div class="meta-row">
+                <span class="badge badge-category" id="case-category">Kategori</span>
+                <span class="badge badge-level" id="case-level-tag">Level 1</span>
             </div>
 
-            <!-- Case Body / Data Stream -->
-            <div class="p-4 space-y-3 text-sm">
-                <h2 id="case-title" class="font-bold text-base text-slate-100 leading-snug">
-                    Memuat simulasi...
-                </h2>
-                <p id="case-description" class="text-slate-300 text-xs leading-relaxed">
-                    Deskripsi dokumen atau transaksi akan muncul di sini.
-                </p>
-
-                <!-- Data Documents Detail Box -->
-                <div class="bg-slate-900/90 border border-slate-700/80 rounded-lg p-3 space-y-2 text-xs font-mono">
-                    <div class="text-slate-400 border-b border-slate-800 pb-1 font-semibold flex justify-between">
-                        <span>DATA DOKUMEN / ASET</span>
-                        <span class="text-emerald-400">VERIFY DATA</span>
-                    </div>
-                    <div id="case-details" class="space-y-1.5 text-slate-300">
-                        <!-- Detail item di-generate via JS -->
-                    </div>
+            <!-- Case Title & Description -->
+            <div class="card case-card">
+                <h2 id="case-title" class="case-title">Loading Kasus...</h2>
+                <p id="case-desc" class="case-desc">Detail skenario akan muncul di sini.</p>
+                
+                <!-- Document / Data Viewer (Interaktif) -->
+                <div class="document-viewer" id="doc-viewer">
+                    <!-- Dynamic Document Data Rendered via JS -->
                 </div>
             </div>
 
-            <!-- Action Buttons Area -->
-            <div id="action-buttons" class="p-3 bg-slate-800/50 border-t border-slate-700/50 grid grid-cols-3 gap-2">
-                <button onclick="submitDecision('APPROVE')" class="flex flex-col items-center justify-center py-2.5 px-1 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-lg transition font-medium text-xs">
-                    <span class="text-base mb-0.5">✅</span>
-                    <span>Setuju</span>
+            <!-- Decision Buttons -->
+            <div class="action-buttons" id="action-area">
+                <button class="btn btn-reject" onclick="handleDecision('reject')">
+                    <i data-lucide="x-circle"></i>
+                    TOLAK (REJECT)
                 </button>
-                <button onclick="submitDecision('NEUTRAL')" class="flex flex-col items-center justify-center py-2.5 px-1 bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-white rounded-lg transition font-medium text-xs">
-                    <span class="text-base mb-0.5">🔍</span>
-                    <span>Review/Feedback</span>
-                </button>
-                <button onclick="submitDecision('REJECT')" class="flex flex-col items-center justify-center py-2.5 px-1 bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white rounded-lg transition font-medium text-xs">
-                    <span class="text-base mb-0.5">❌</span>
-                    <span>Tolak</span>
+                <button class="btn btn-approve" onclick="handleDecision('approve')">
+                    <i data-lucide="check-circle"></i>
+                    SETUJU (APPROVE)
                 </button>
             </div>
-        </div>
 
-        <!-- Feedback & Evaluation Panel (Hidden by default) -->
-        <div id="feedback-panel" class="hidden bg-slate-800 rounded-xl border p-4 space-y-3 shadow-lg transition-all duration-300">
-            <div class="flex items-center space-x-2">
-                <span id="feedback-icon" class="text-xl"></span>
-                <h3 id="feedback-title" class="font-bold text-sm"></h3>
+            <!-- Feedback / Result Section (Hidden Initially) -->
+            <div class="card feedback-card hidden" id="feedback-card">
+                <div class="feedback-header" id="feedback-header">
+                    <i id="feedback-icon" data-lucide="info"></i>
+                    <h3 id="feedback-title">Hasil Keputusan</h3>
+                </div>
+                <p id="feedback-text" class="feedback-text"></p>
+                
+                <div class="feedback-details">
+                    <span class="detail-label">Analisis Verifikator:</span>
+                    <p id="feedback-reason" class="reason-text"></p>
+                </div>
+
+                <button class="btn btn-next" onclick="nextCase()">
+                    Kasus Selanjutnya
+                    <i data-lucide="arrow-right"></i>
+                </button>
             </div>
-            <p id="feedback-reason" class="text-xs text-slate-300 leading-relaxed bg-slate-900/50 p-3 rounded-lg border border-slate-700/50">
-            </p>
-            <button onclick="nextCase()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-medium text-xs rounded-lg transition flex items-center justify-center space-x-2">
-                <span>Lanjut ke Kasus Berikutnya</span>
-                <span>➔</span>
-            </button>
-        </div>
+        </main>
+    </div>
 
-    </main>
-
-    <!-- External Logic Scripts -->
-    <script src="data/cases.js"></script>
+    <script src="data.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
