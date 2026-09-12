@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VerifierSim Metaverse</title>
-    <!-- Google Fonts Metaverse Theme -->
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="styles.css">
@@ -12,7 +12,7 @@
 <body>
 
     <div class="app-container">
-        <!-- Header -->
+        <!-- Top HUD Header -->
         <header class="app-header">
             <div class="brand">
                 <i data-lucide="shield-check" class="brand-icon"></i>
@@ -30,35 +30,35 @@
             </div>
         </header>
 
-        <!-- Progress Bar -->
+        <!-- Dynamic Neon Progress Bar -->
         <div class="progress-bar-wrapper">
             <div class="progress-bar-fill" id="progress-fill" style="width: 0%;"></div>
         </div>
 
-        <!-- Main Content -->
+        <!-- Main Content HUD -->
         <main class="main-content">
             <div class="meta-row">
                 <span class="badge badge-category" id="case-category">METAVERSE MODE</span>
                 <span class="badge badge-level" id="case-level-tag">LEVEL -</span>
             </div>
 
-            <!-- Card Case -->
+            <!-- Main Case Card View -->
             <div class="card case-card">
                 <h2 id="case-title" class="case-title">SIMULATOR VERIFIKASI</h2>
-                <p id="case-desc" class="case-desc">Klik tombol di bawah untuk membuat 10 skenario verifikasi harian berbasis AI.</p>
+                <p id="case-desc" class="case-desc">Klik tombol di bawah untuk memuat 10 skenario verifikasi harian berbasis AI.</p>
                 
                 <div class="document-viewer" id="doc-viewer">
-                    <p style="text-align: center; color: var(--text-muted); padding: 10px; font-size: 0.85rem;">Sistem siap. Tekan tombol generate.</p>
+                    <p style="text-align: center; color: var(--text-muted); padding: 12px; font-size: 0.85rem;">Sistem Siap. Tekan tombol generate di bawah.</p>
                 </div>
             </div>
 
-            <!-- Generator Button -->
+            <!-- AI Generator Button -->
             <button class="btn btn-ai-generate" id="btn-generate" onclick="generateDailyCases()">
                 <i data-lucide="sparkles"></i>
                 GENERATE 10 KASUS HARI INI
             </button>
 
-            <!-- Action Buttons -->
+            <!-- Interactive Decision Buttons -->
             <div class="action-buttons hidden" id="action-area">
                 <button class="btn btn-reject" onclick="handleDecision('reject')">
                     <i data-lucide="x-circle"></i>
@@ -70,11 +70,11 @@
                 </button>
             </div>
 
-            <!-- Feedback Card -->
+            <!-- Instant Feedback Evaluation HUD -->
             <div class="card feedback-card hidden" id="feedback-card">
                 <div class="feedback-header">
                     <i id="feedback-icon" data-lucide="info"></i>
-                    <h3 id="feedback-title" style="font-family: 'Orbitron'; font-size: 1.1rem;">HASIL EVALUASI</h3>
+                    <h3 id="feedback-title" style="font-family: 'Orbitron'; font-size: 1rem;">HASIL EVALUASI</h3>
                 </div>
                 <p id="feedback-text" class="feedback-text"></p>
                 
