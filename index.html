@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Verifier & Validator Simulator</title>
-    <!-- Google Fonts & Lucide Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="styles.css">
@@ -12,11 +11,11 @@
 <body>
 
     <div class="app-container">
-        <!-- Header / Top Bar -->
+        <!-- Header -->
         <header class="app-header">
             <div class="brand">
                 <i data-lucide="shield-check" class="brand-icon"></i>
-                <span class="brand-title">VerifierSim</span>
+                <span class="brand-title">VerifierSim AI</span>
             </div>
             <div class="stats-badge">
                 <div class="stat-item">
@@ -25,37 +24,45 @@
                 </div>
                 <div class="stat-item">
                     <i data-lucide="award" class="icon-purple"></i>
-                    Level <span id="level-val">1</span>
+                    Lvl <span id="level-val">1</span>
                 </div>
+                <button class="btn-settings" onclick="toggleApiModal()">
+                    <i data-lucide="key" style="width: 16px; height: 16px;"></i>
+                </button>
             </div>
         </header>
 
-        <!-- Progress Bar Baris Atas -->
+        <!-- Progress Bar -->
         <div class="progress-bar-wrapper">
-            <div class="progress-bar-fill" id="progress-fill" style="width: 10%;"></div>
+            <div class="progress-bar-fill" id="progress-fill" style="width: 0%;"></div>
         </div>
 
-        <!-- Main Card Case Container -->
+        <!-- Main Content -->
         <main class="main-content">
-            <!-- Category & Difficulty Pill -->
+            <!-- Daily Case Info & Refresh -->
             <div class="meta-row">
-                <span class="badge badge-category" id="case-category">Kategori</span>
-                <span class="badge badge-level" id="case-level-tag">Level 1</span>
+                <span class="badge badge-category" id="case-category">Menunggu Data...</span>
+                <span class="badge badge-level" id="case-level-tag">Level -</span>
             </div>
 
-            <!-- Case Title & Description -->
+            <!-- Card View -->
             <div class="card case-card">
-                <h2 id="case-title" class="case-title">Loading Kasus...</h2>
-                <p id="case-desc" class="case-desc">Detail skenario akan muncul di sini.</p>
+                <h2 id="case-title" class="case-title">Klik "Generate 10 Kasus Hari Ini"</h2>
+                <p id="case-desc" class="case-desc">Masukkan API Key Gemini Anda di menu kunci di atas, lalu tekan tombol generate di bawah untuk membuat 10 kasus simulasi harian otomatis.</p>
                 
-                <!-- Document / Data Viewer (Interaktif) -->
                 <div class="document-viewer" id="doc-viewer">
-                    <!-- Dynamic Document Data Rendered via JS -->
+                    <p style="text-align: center; color: var(--text-secondary); padding: 10px;">Belum ada dokumen dimuat.</p>
                 </div>
             </div>
 
-            <!-- Decision Buttons -->
-            <div class="action-buttons" id="action-area">
+            <!-- Generator Button -->
+            <button class="btn btn-ai-generate" id="btn-generate" onclick="generateDailyCases()">
+                <i data-lucide="sparkles"></i>
+                Generate 10 Kasus Hari Ini (AI)
+            </button>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons hidden" id="action-area">
                 <button class="btn btn-reject" onclick="handleDecision('reject')">
                     <i data-lucide="x-circle"></i>
                     TOLAK (REJECT)
@@ -66,9 +73,9 @@
                 </button>
             </div>
 
-            <!-- Feedback / Result Section (Hidden Initially) -->
+            <!-- Feedback -->
             <div class="card feedback-card hidden" id="feedback-card">
-                <div class="feedback-header" id="feedback-header">
+                <div class="feedback-header">
                     <i id="feedback-icon" data-lucide="info"></i>
                     <h3 id="feedback-title">Hasil Keputusan</h3>
                 </div>
@@ -87,7 +94,19 @@
         </main>
     </div>
 
-    <script src="data.js"></script>
+    <!-- Modal API Key -->
+    <div class="modal hidden" id="api-modal">
+        <div class="modal-content">
+            <h3>Pengaturan Gemini API Key</h3>
+            <p>Masukkan API Key gratis dari Google AI Studio (aistudio.google.com):</p>
+            <input type="password" id="api-key-input" placeholder="AIzaSy..." />
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="toggleApiModal()">Batal</button>
+                <button class="btn btn-primary" onclick="saveApiKey()">Simpan</button>
+            </div>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>
