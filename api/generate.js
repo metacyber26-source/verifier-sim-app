@@ -26,8 +26,8 @@ export default async function handler(req, res) {
       }
     ]`;
 
-    // Menggunakan model 'gemini-2.5-flash' (atau alias 'gemini-flash' yang selalu mengarah ke versi terbaru)
-    const modelName = 'gemini-2.5-flash';
+    // Menggunakan model Gemini 3.6 Flash sesuai spesifikasi akun API terbaru
+    const modelName = 'gemini-3.6-flash';
     const targetUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
 
     try {
