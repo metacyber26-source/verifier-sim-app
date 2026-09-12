@@ -1,16 +1,19 @@
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
+        return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
+    // Mengambil API Key (Baik awalan AIza... maupun AQ... didukung penuh)
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-        return res.status(500).json({ error: 'GEMINI_API_KEY belum dikonfigurasi di Vercel Environment Variables.' });
+        return res.status(500).json({ 
+            error: 'GEMINI_API_KEY belum terdeteksi. Silakan pastikan Anda sudah melakukan Redeploy di Vercel.' 
+        });
     }
 
-    const prompt = `Buatkan 10 skenario kasus verifikasi/validasi interaktif dalam berbagai bidang kehidupan (KYC/Identitas, Keuangan/Perbankan, Legalitas Bisnis, Forensik Digital, Aset/Teknis, Asuransi/Kesehatan).
+    const promptText = `Buatkan 10 skenario kasus verifikasi/validasi interaktif dalam berbagai bidang kehidupan (KYC/Identitas, Keuangan/Perbankan, Legalitas Bisnis, Forensik Digital, Aset/Teknis, Asuransi/Kesehatan).
     Tingkat kesulitan harus bertahap dari Level 1 (Beginner) hingga Level 10 (Expert).
-    Kembalikan HANYA format JSON murni tanpa markdown/backticks dengan struktur array seperti ini:
+    WAJIB mengembalikan HANYA format JSON murni tanpa markdown, tanpa backticks (\`\`\`json), dengan struktur array JSON berikut:
     [
       {
         "id": 1,
@@ -29,22 +32,30 @@ export default async function handler(req, res) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }]
+                contents: [{ parts: [{ text: promptText }] }]
             })
         });
 
         const data = await response.json();
-        
-        if (!data.candidates || !data.candidates[0]) {
-            return res.status(500).json({ error: 'Respon API tidak valid.' });
+
+        if (!response.ok) {
+            return res.status(response.status).json({ 
+                error: data.error?.message || 'Gagal merespon dari API Gemini.' 
+            });
+        }
+
+        if (!data.candidates || !data.candidates[0]?.content?.parts[0]?.text) {
+            return res.status(500).json({ error: 'Respon API kosong atau tidak valid.' });
         }
 
         let rawText = data.candidates[0].content.parts[0].text;
-        rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
         
-        const cases = JSON.parse(rawText);
-        return res.status(200).json(cases);
+        // Membersihkan format jika AI memberikan markdown backticks
+        rawText = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+        
+        const parsedCases = JSON.parse(rawText);
+        return res.status(200).json(parsedCases);
     } catch (err) {
-        return res.status(500).json({ error: 'Gagal membuat kasus: ' + err.message });
+        return res.status(500).json({ error: 'Server Error: ' + err.message });
     }
 }
