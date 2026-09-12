@@ -7,8 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
     const savedCases = localStorage.getItem('daily_cases');
     if (savedCases) {
-        dailyCases = JSON.parse(savedCases);
-        loadCase(0);
+        try {
+            dailyCases = JSON.parse(savedCases);
+            loadCase(0);
+        } catch(e) {
+            console.error("Cache corrupted, reset state.");
+        }
     }
 });
 
@@ -26,7 +30,7 @@ async function generateDailyCases() {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.error || 'Gagal terhubung ke server');
+            throw new Error(data.error || 'Terjadi kesalahan pada server Vercel.');
         }
 
         dailyCases = data;
@@ -35,10 +39,10 @@ async function generateDailyCases() {
         currentCaseIndex = 0;
         loadCase(0);
     } catch (err) {
-        alert('Terjadi kesalahan: ' + err.message);
+        alert('Gagal Memuat Kasus: ' + err.message);
     } finally {
         btn.disabled = false;
-        btn.innerHTML = `<i data-lucide="sparkles"></i> Generate 10 Kasus Hari Ini`;
+        btn.innerHTML = `<i data-lucide="sparkles"></i> GENERATE 10 KASUS HARI INI`;
         lucide.createIcons();
     }
 }
@@ -46,7 +50,7 @@ async function generateDailyCases() {
 function loadCase(index) {
     if (!dailyCases || dailyCases.length === 0) return;
     if (index >= dailyCases.length) {
-        alert('Selamat! Anda telah menyelesaikan 10 kasus verifikasi harian.');
+        alert('Selamat! Anda telah menyelesaikan seluruh 10 kasus simulasi hari ini.');
         return;
     }
 
@@ -56,7 +60,7 @@ function loadCase(index) {
     document.getElementById('action-area').classList.remove('hidden');
 
     document.getElementById('case-category').textContent = currentCase.category;
-    document.getElementById('case-level-tag').textContent = `Level ${currentCase.level}`;
+    document.getElementById('case-level-tag').textContent = `LEVEL ${currentCase.level}`;
     document.getElementById('case-title').textContent = currentCase.title;
     document.getElementById('case-desc').textContent = currentCase.description;
 
@@ -86,8 +90,8 @@ function handleDecision(userChoice) {
 
     if (isCorrect) {
         feedbackCard.classList.add('correct');
-        document.getElementById('feedback-title').textContent = "Keputusan Tepat!";
-        document.getElementById('feedback-text').textContent = "Analisis dan keputusan Anda sudah sesuai standar verifikasi.";
+        document.getElementById('feedback-title').textContent = "KEPUTUSAN TEPAT!";
+        document.getElementById('feedback-text').textContent = "Analisis dan keputusan Anda telah sesuai standar verifikator.";
         
         userScore += currentCase.level * 50;
         document.getElementById('score-val').textContent = userScore;
@@ -95,7 +99,7 @@ function handleDecision(userChoice) {
         document.getElementById('level-val').textContent = userLevel;
     } else {
         feedbackCard.classList.add('incorrect');
-        document.getElementById('feedback-title').textContent = "Keputusan Keliru!";
+        document.getElementById('feedback-title').textContent = "KEPUTUSAN KELIRU!";
         document.getElementById('feedback-text').textContent = "Terdapat indikasi anomali atau risiko yang terlewatkan.";
     }
 
