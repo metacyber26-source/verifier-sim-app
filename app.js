@@ -1,45 +1,113 @@
 let currentCaseIndex = 0;
 let userScore = 0;
 let userLevel = 1;
+let dailyCases = [];
 
-// DOM Elements
-const scoreVal = document.getElementById('score-val');
-const levelVal = document.getElementById('level-val');
-const progressFill = document.getElementById('progress-fill');
-const caseCategory = document.getElementById('case-category');
-const caseLevelTag = document.getElementById('case-level-tag');
-const caseTitle = document.getElementById('case-title');
-const caseDesc = document.getElementById('case-desc');
-const docViewer = document.getElementById('doc-viewer');
-const actionArea = document.getElementById('action-area');
-const feedbackCard = document.getElementById('feedback-card');
-
-// Initialize Application
+// Load Local Storage on Init
 document.addEventListener('DOMContentLoaded', () => {
-    loadCase(currentCaseIndex);
     lucide.createIcons();
+    const savedApiKey = localStorage.getItem('gemini_api_key');
+    const savedCases = localStorage.getItem('daily_cases');
+    
+    if (savedCases) {
+        dailyCases = JSON.parse(savedCases);
+        loadCase(0);
+    }
 });
 
-function loadCase(index) {
-    if (index >= caseDatabase.length) {
-        // Tamat / Loop / Restart
-        currentCaseIndex = 0;
-        index = 0;
+function toggleApiModal() {
+    const modal = document.getElementById('api-modal');
+    modal.classList.toggle('hidden');
+    const savedKey = localStorage.getItem('gemini_api_key') || '';
+    document.getElementById('api-key-input').value = savedKey;
+}
+
+function saveApiKey() {
+    const key = document.getElementById('api-key-input').value.trim();
+    if (key) {
+        localStorage.setItem('gemini_api_key', key);
+        alert('API Key berhasil disimpan!');
+        toggleApiModal();
+    }
+}
+
+async function generateDailyCases() {
+    const apiKey = localStorage.getItem('gemini_api_key');
+    if (!apiKey) {
+        alert('Silakan masukkan Gemini API Key terlebih dahulu melalui ikon kunci di atas.');
+        toggleApiModal();
+        return;
     }
 
-    const currentCase = caseDatabase[index];
+    const btn = document.getElementById('btn-generate');
+    btn.disabled = true;
+    btn.innerHTML = `<i data-lucide="loader" class="spin"></i> Memproses 10 Kasus...`;
+    lucide.createIcons();
 
-    // Reset UI State
-    feedbackCard.classList.add('hidden');
-    actionArea.classList.remove('hidden');
+    const prompt = `Buatkan 10 skenario kasus verifikasi/validasi interaktif dalam berbagai bidang kehidupan (KYC/Identitas, Keuangan/Perbankan, Legalitas Bisnis, Forensik Digital, Aset/Teknis, Asuransi/Kesehatan).
+    Tingkat kesulitan harus bertahap dari Level 1 (Beginner) hingga Level 10 (Expert).
+    Kembalikan HANYA format JSON murni tanpa markdown/backticks dengan struktur array seperti ini:
+    [
+      {
+        "id": 1,
+        "level": 1,
+        "category": "Kategori Bidang",
+        "title": "Judul Kasus",
+        "description": "Deskripsi singkat kasus",
+        "documentData": { "Field1": "Nilai1", "Field2": "Nilai2" },
+        "correctAction": "approve" ATAU "reject",
+        "explanation": "Penjelasan rinci mengapa disetujui/ditolak"
+      }
+    ]`;
 
-    // Set Data UI
-    caseCategory.textContent = currentCase.category;
-    caseLevelTag.textContent = `Level ${currentCase.level}`;
-    caseTitle.textContent = currentCase.title;
-    caseDesc.textContent = currentCase.description;
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }]
+            })
+        });
 
-    // Render Document Fields
+        const data = await response.json();
+        let rawText = data.candidates[0].content.parts[0].text;
+        
+        // Clean JSON formatting if enclosed in codeblocks
+        rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+        
+        dailyCases = JSON.parse(rawText);
+        localStorage.setItem('daily_cases', JSON.stringify(dailyCases));
+        
+        currentCaseIndex = 0;
+        loadCase(0);
+        alert('Berhasil membuat 10 kasus verifikasi harian baru!');
+    } catch (err) {
+        alert('Gagal membuat kasus: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="sparkles"></i> Generate 10 Kasus Hari Ini (AI)`;
+        lucide.createIcons();
+    }
+}
+
+function loadCase(index) {
+    if (!dailyCases || dailyCases.length === 0) return;
+    if (index >= dailyCases.length) {
+        alert('Selamat! Anda telah menyelesaikan 10 kasus verifikasi hari ini.');
+        return;
+    }
+
+    const currentCase = dailyCases[index];
+
+    document.getElementById('feedback-card').classList.add('hidden');
+    document.getElementById('action-area').classList.remove('hidden');
+
+    document.getElementById('case-category').textContent = currentCase.category;
+    document.getElementById('case-level-tag').textContent = `Level ${currentCase.level}`;
+    document.getElementById('case-title').textContent = currentCase.title;
+    document.getElementById('case-desc').textContent = currentCase.description;
+
+    const docViewer = document.getElementById('doc-viewer');
     docViewer.innerHTML = '';
     for (const [key, value] of Object.entries(currentCase.documentData)) {
         const fieldRow = document.createElement('div');
@@ -51,44 +119,34 @@ function loadCase(index) {
         docViewer.appendChild(fieldRow);
     }
 
-    // Update Progress Bar
-    const progress = ((index + 1) / caseDatabase.length) * 100;
-    progressFill.style.width = `${progress}%`;
+    const progress = ((index + 1) / dailyCases.length) * 100;
+    document.getElementById('progress-fill').style.width = `${progress}%`;
 }
 
 function handleDecision(userChoice) {
-    const currentCase = caseDatabase[currentCaseIndex];
+    const currentCase = dailyCases[currentCaseIndex];
     const isCorrect = userChoice === currentCase.correctAction;
 
-    // Show Feedback
-    actionArea.classList.add('hidden');
+    document.getElementById('action-area').classList.add('hidden');
+    const feedbackCard = document.getElementById('feedback-card');
     feedbackCard.classList.remove('hidden', 'correct', 'incorrect');
-
-    const feedbackIcon = document.getElementById('feedback-icon');
-    const feedbackTitle = document.getElementById('feedback-title');
-    const feedbackText = document.getElementById('feedback-text');
-    const feedbackReason = document.getElementById('feedback-reason');
 
     if (isCorrect) {
         feedbackCard.classList.add('correct');
-        feedbackTitle.textContent = "Keputusan Tepat!";
-        feedbackText.textContent = "Analisis dan tindakan verifikasi Anda sudah sesuai prosedur.";
+        document.getElementById('feedback-title').textContent = "Keputusan Tepat!";
+        document.getElementById('feedback-text').textContent = "Analisis dan tindakan verifikasi Anda sesuai prosedur.";
         
-        // Add Points
-        const pointsEarned = currentCase.level * 50;
-        userScore += pointsEarned;
-        scoreVal.textContent = userScore;
-
-        // Level Up Logic
+        userScore += currentCase.level * 50;
+        document.getElementById('score-val').textContent = userScore;
         userLevel = Math.floor(userScore / 100) + 1;
-        levelVal.textContent = userLevel;
+        document.getElementById('level-val').textContent = userLevel;
     } else {
         feedbackCard.classList.add('incorrect');
-        feedbackTitle.textContent = "Keputusan Keliru!";
-        feedbackText.textContent = "Keputusan yang diambil memiliki risiko tinggi atau ketidaksesuaian.";
+        document.getElementById('feedback-title').textContent = "Keputusan Keliru!";
+        document.getElementById('feedback-text').textContent = "Terdapat anomali/risiko yang terlewatkan.";
     }
 
-    feedbackReason.textContent = currentCase.explanation;
+    document.getElementById('feedback-reason').textContent = currentCase.explanation;
     lucide.createIcons();
 }
 
