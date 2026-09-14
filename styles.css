@@ -114,22 +114,24 @@ body {
 .doc-label { color: var(--text-muted); }
 .doc-val { font-weight: 700; color: var(--neon-cyan); font-family: 'Orbitron', monospace; font-size: 0.8rem; text-align: right; }
 
-/* Weight Selection Styles */
+.action-section { display: flex; flex-direction: column; gap: 12px; }
+
+/* Skala Kepuasan Box */
 .weight-box {
-    background: rgba(15, 20, 38, 0.6); border: 1px solid rgba(0, 240, 255, 0.2);
-    border-radius: 12px; padding: 12px; margin-bottom: 12px;
+    background: rgba(15, 20, 38, 0.7); border: 1px solid rgba(0, 240, 255, 0.25);
+    border-radius: 12px; padding: 12px;
 }
-.weight-label-row { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; }
-.weight-num { color: var(--neon-blue); font-family: 'Orbitron'; font-size: 0.9rem; }
+.weight-label-row { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; }
+.weight-num { color: var(--neon-cyan); font-family: 'Orbitron'; font-size: 0.8rem; font-weight: 700; margin-bottom: 10px; }
 .weight-selector { display: flex; gap: 8px; }
 .btn-weight {
-    flex: 1; padding: 8px 0; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);
+    flex: 1; padding: 10px 0; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.15);
     background: rgba(255, 255, 255, 0.05); color: var(--text-main); font-family: 'Orbitron';
-    font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+    font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s;
 }
 .btn-weight.active {
     background: var(--neon-blue); color: #070913; border-color: var(--neon-cyan);
-    box-shadow: 0 0 10px var(--neon-blue);
+    box-shadow: 0 0 12px var(--neon-blue);
 }
 
 .btn {
