@@ -1,113 +1,17 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VerifierSim Metaverse</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-
-    <div class="app-container">
-        <!-- Header -->
-        <header class="app-header">
-            <div class="brand">
-                <i data-lucide="shield-check" class="brand-icon"></i>
-                <span class="brand-title">VERIFIERSIM</span>
-            </div>
-            <div class="stats-badge">
-                <div class="stat-item">
-                    <i data-lucide="zap" class="icon-gold"></i>
-                    <span id="score-val">0</span> XP
-                </div>
-                <div class="stat-item">
-                    <i data-lucide="award" class="icon-purple"></i>
-                    LVL <span id="level-val">1</span>
-                </div>
-            </div>
-        </header>
-
-        <!-- Progress Bar -->
-        <div class="progress-bar-wrapper">
-            <div class="progress-bar-fill" id="progress-fill" style="width: 0%;"></div>
-        </div>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="meta-row">
-                <span class="badge badge-category" id="case-category">METAVERSE MODE</span>
-                <span class="badge badge-level" id="case-level-tag">LEVEL -</span>
-            </div>
-
-            <!-- Card View -->
-            <div class="card case-card">
-                <h2 id="case-title" class="case-title">SIMULATOR VERIFIKASI</h2>
-                <p id="case-desc" class="case-desc">Klik tombol di bawah untuk memuat 10 skenario verifikasi harian berbasis AI.</p>
-                
-                <div class="document-viewer" id="doc-viewer">
-                    <p style="text-align: center; color: var(--text-muted); padding: 10px; font-size: 0.85rem;">Sistem Siap. Tekan tombol generate di bawah.</p>
-                </div>
-            </div>
-
-            <!-- Generator Button -->
-            <button class="btn btn-ai-generate" id="btn-generate" onclick="generateDailyCases()">
-                <i data-lucide="sparkles"></i>
-                GENERATE 10 KASUS HARI INI
-            </button>
-
-            <!-- Interactive Decision & Weight Area -->
-            <div class="action-section hidden" id="action-area">
-                <!-- Weight Selection Slider / Selector -->
-                <div class="weight-box">
-                    <div class="weight-label-row">
-                        <span>TINGKAT KEPADAAN / RISIKO:</span>
-                        <span class="weight-num" id="weight-display">3</span>
-                    </div>
-                    <div class="weight-selector">
-                        <button class="btn-weight" onclick="setWeight(1)">1</button>
-                        <button class="btn-weight" onclick="setWeight(2)">2</button>
-                        <button class="btn-weight active" onclick="setWeight(3)">3</button>
-                        <button class="btn-weight" onclick="setWeight(4)">4</button>
-                        <button class="btn-weight" onclick="setWeight(5)">5</button>
-                    </div>
-                </div>
-
-                <!-- Decision Buttons -->
-                <div class="action-buttons">
-                    <button class="btn btn-reject" onclick="handleDecision('reject')">
-                        <i data-lucide="x-circle"></i>
-                        TOLAK (REJECT)
-                    </button>
-                    <button class="btn btn-approve" onclick="handleDecision('approve')">
-                        <i data-lucide="check-circle"></i>
-                        SETUJU (APPROVE)
-                    </button>
-                </div>
-            </div>
-
-            <!-- Feedback Card -->
-            <div class="card feedback-card hidden" id="feedback-card">
-                <div class="feedback-header">
-                    <i id="feedback-icon" data-lucide="info"></i>
-                    <h3 id="feedback-title" style="font-family: 'Orbitron'; font-size: 1rem;">HASIL EVALUASI</h3>
-                </div>
-                <p id="feedback-text" class="feedback-text"></p>
-                
-                <div class="feedback-details">
-                    <span class="detail-label">ANALISIS VERIFIKATOR:</span>
-                    <p id="feedback-reason" class="reason-text"></p>
-                </div>
-
-                <button class="btn btn-next" onclick="nextCase()">
-                    KASUS SELANJUTNYA
-                    <i data-lucide="arrow-right"></i>
-                </button>
-            </div>
-        </main>
+<!-- Bagian Pilihan Skala Tingkat Kepuasan / Kelayakan -->
+<div class="weight-box">
+    <div class="weight-label-row">
+        <span>TINGKAT KEPUASAN / KELAYAKAN:</span>
+        <span class="weight-num" id="weight-display">3 - LAYAK / PUAS</span>
     </div>
-
-    <script src="app.js"></script>
-</body>
-</html>
+    <div class="weight-selector">
+        <button class="btn-weight" onclick="setWeight(1)">1</button>
+        <button class="btn-weight" onclick="setWeight(2)">2</button>
+        <button class="btn-weight active" onclick="setWeight(3)">3</button>
+        <button class="btn-weight" onclick="setWeight(4)">4</button>
+        <button class="btn-weight" onclick="setWeight(5)">5</button>
+    </div>
+    <div class="weight-hint">
+        <small id="weight-hint-text">Skala 3: Memenuhi standar verifikasi umum</small>
+    </div>
+</div>
