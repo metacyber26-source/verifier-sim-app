@@ -13,9 +13,15 @@ export default async function handler(req, res) {
     const promptText = `Buatkan 10 skenario kasus verifikasi/validasi interaktif dalam berbagai bidang kehidupan (KYC/Identitas, Keuangan/Perbankan, Legalitas Bisnis, Forensik Digital, Aset/Teknis, Asuransi/Kesehatan).
     Tingkat kesulitan bertahap dari Level 1 (Beginner) hingga Level 10 (Expert).
     
-    Setiap kasus harus memiliki keputusan utama: "approve" ATAU "reject", DAN bobot tingkat kepastian/risiko dari skala 1 sampai 5:
-    - Jika "approve": 1 (Setuju Bersyarat), 3 (Setuju Standar), 5 (Sangat Setuju/Mutlak Valid).
-    - Jika "reject": 1 (Tolak Minta Revisi), 3 (Tolak Standar), 5 (Sangat Tolak / Red Flag / Fraud Severity Tinggi).
+    Setiap kasus mengevaluasi tingkat kepuasan/kelayakan dokumen berdasarkan skala 1 sampai 5:
+    - Keputusan "approve": 
+      * 1 = Cukup Layak (Memenuhi syarat minimal/ada catatan kecil)
+      * 3 = Layak / Puas (Memenuhi standar operasional)
+      * 5 = Sangat Layak / Sangat Puas (Mutlak Valid, Otentik 100%)
+    - Keputusan "reject": 
+      * 1 = Kurang Layak (Perlu perbaikan/revisi ringan)
+      * 3 = Tidak Layak (Tidak memenuhi kualifikasi/banyak anomali)
+      * 5 = Sangat Tidak Layak / Red Flag (Sangat Berbahaya / Indikasi Fraud / Manipulasi Data)
 
     WAJIB mengembalikan HANYA format JSON murni tanpa markdown/backticks dengan struktur array seperti ini:
     [
@@ -24,11 +30,11 @@ export default async function handler(req, res) {
         "level": 1,
         "category": "Kategori Bidang",
         "title": "Judul Kasus",
-        "description": "Deskripsi singkat kasus",
+        "description": "Deskripsi singkat kasus dan objek verifikasi",
         "documentData": { "Field1": "Nilai1", "Field2": "Nilai2" },
         "correctAction": "approve",
         "targetWeight": 5,
-        "explanation": "Penjelasan rinci mengapa keputusan ini diambil dengan tingkat bobot tersebut"
+        "explanation": "Penjelasan rinci mengenai alasan keputusan dan penentuan skala tingkat kepuasan/kelayakan dokumen"
       }
     ]`;
 
