@@ -6,13 +6,18 @@ export default async function handler(req, res) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
         return res.status(500).json({ 
-            error: 'GEMINI_API_KEY belum terdeteksi. Silakan pastikan Anda sudah menambahkan API Key dan melakukan Redeploy di Vercel.' 
+            error: 'GEMINI_API_KEY belum terdeteksi di Vercel Environment Variables.' 
         });
     }
 
     const promptText = `Buatkan 10 skenario kasus verifikasi/validasi interaktif dalam berbagai bidang kehidupan (KYC/Identitas, Keuangan/Perbankan, Legalitas Bisnis, Forensik Digital, Aset/Teknis, Asuransi/Kesehatan).
-    Tingkat kesulitan harus bertahap dari Level 1 (Beginner) hingga Level 10 (Expert).
-    WAJIB mengembalikan HANYA format JSON murni tanpa markdown, tanpa backticks (\`\`\`json), dengan struktur array JSON berikut:
+    Tingkat kesulitan bertahap dari Level 1 (Beginner) hingga Level 10 (Expert).
+    
+    Setiap kasus harus memiliki keputusan utama: "approve" ATAU "reject", DAN bobot tingkat kepastian/risiko dari skala 1 sampai 5:
+    - Jika "approve": 1 (Setuju Bersyarat), 3 (Setuju Standar), 5 (Sangat Setuju/Mutlak Valid).
+    - Jika "reject": 1 (Tolak Minta Revisi), 3 (Tolak Standar), 5 (Sangat Tolak / Red Flag / Fraud Severity Tinggi).
+
+    WAJIB mengembalikan HANYA format JSON murni tanpa markdown/backticks dengan struktur array seperti ini:
     [
       {
         "id": 1,
@@ -22,11 +27,11 @@ export default async function handler(req, res) {
         "description": "Deskripsi singkat kasus",
         "documentData": { "Field1": "Nilai1", "Field2": "Nilai2" },
         "correctAction": "approve",
-        "explanation": "Penjelasan rinci mengapa disetujui/ditolak"
+        "targetWeight": 5,
+        "explanation": "Penjelasan rinci mengapa keputusan ini diambil dengan tingkat bobot tersebut"
       }
     ]`;
 
-    // Menggunakan model Gemini 3.6 Flash sesuai spesifikasi akun API terbaru
     const modelName = 'gemini-3.6-flash';
     const targetUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
 
@@ -48,12 +53,10 @@ export default async function handler(req, res) {
         }
 
         if (!data.candidates || !data.candidates[0]?.content?.parts[0]?.text) {
-            return res.status(500).json({ error: 'Respon dari API kosong atau tidak valid.' });
+            return res.status(500).json({ error: 'Respon dari API kosong.' });
         }
 
         let rawText = data.candidates[0].content.parts[0].text;
-        
-        // Membersihkan format markdown backticks jika disertakan oleh AI
         rawText = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
         
         const parsedCases = JSON.parse(rawText);
