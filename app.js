@@ -10,7 +10,6 @@ function setWeight(val) {
     selectedWeight = val;
     document.getElementById('weight-display').textContent = weightLabels[val];
     
-    // Highlight tombol terpilih
     const buttons = document.querySelectorAll('.btn-weight');
     buttons.forEach((btn, idx) => {
         if (idx + 1 === val) {
