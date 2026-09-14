@@ -2,6 +2,7 @@ let currentCaseIndex = 0;
 let userScore = 0;
 let userLevel = 1;
 let dailyCases = [];
+let selectedWeight = 3; // Default Bobot = 3
 
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
@@ -11,10 +12,25 @@ document.addEventListener('DOMContentLoaded', () => {
             dailyCases = JSON.parse(savedCases);
             loadCase(0);
         } catch(e) {
-            console.error("Cache corrupted, reset state.");
+            console.error("Cache reset.");
         }
     }
 });
+
+function setWeight(val) {
+    selectedWeight = val;
+    document.getElementById('weight-display').textContent = val;
+    
+    // Update Active Button UI
+    const buttons = document.querySelectorAll('.btn-weight');
+    buttons.forEach((btn, idx) => {
+        if (idx + 1 === val) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+}
 
 async function generateDailyCases() {
     const btn = document.getElementById('btn-generate');
@@ -23,10 +39,7 @@ async function generateDailyCases() {
     lucide.createIcons();
 
     try {
-        const response = await fetch('/api/generate', {
-            method: 'POST'
-        });
-
+        const response = await fetch('/api/generate', { method: 'POST' });
         const data = await response.json();
 
         if (!response.ok) {
@@ -76,31 +89,48 @@ function loadCase(index) {
         docViewer.appendChild(fieldRow);
     }
 
+    // Reset Weight to 3
+    setWeight(3);
+
     const progress = ((index + 1) / dailyCases.length) * 100;
     document.getElementById('progress-fill').style.width = `${progress}%`;
 }
 
 function handleDecision(userChoice) {
     const currentCase = dailyCases[currentCaseIndex];
-    const isCorrect = userChoice === currentCase.correctAction;
+    const isActionCorrect = userChoice === currentCase.correctAction;
+    
+    // Perhitungan Akurasi Bobot
+    const targetWeight = currentCase.targetWeight || 3;
+    const weightDiff = Math.abs(selectedWeight - targetWeight); // 0 jika persis sama
 
     document.getElementById('action-area').classList.add('hidden');
     const feedbackCard = document.getElementById('feedback-card');
     feedbackCard.classList.remove('hidden', 'correct', 'incorrect');
 
-    if (isCorrect) {
-        feedbackCard.classList.add('correct');
-        document.getElementById('feedback-title').textContent = "KEPUTUSAN TEPAT!";
-        document.getElementById('feedback-text').textContent = "Analisis dan keputusan Anda telah sesuai standar verifikator.";
+    if (isActionCorrect) {
+        let earnedXP = currentCase.level * 50;
         
-        userScore += currentCase.level * 50;
+        if (weightDiff === 0) {
+            feedbackCard.classList.add('correct');
+            document.getElementById('feedback-title').textContent = "PERFECT! KEPUTUSAN & BOBOT AKURAT!";
+            document.getElementById('feedback-text').textContent = `Keputusan tepat dan skala bobot (${selectedWeight}/5) sangat akurat sesuai profil risiko.`;
+            earnedXP += 30; // Bonus XP Bobot Akurat
+        } else {
+            feedbackCard.classList.add('correct');
+            document.getElementById('feedback-title').textContent = "KEPUTUSAN TEPAT (BOBOT KURANG AKURAT)";
+            document.getElementById('feedback-text').textContent = `Tindakan tepat, namun skala bobot ideal adalah ${targetWeight}/5 (Pilihan Anda: ${selectedWeight}/5).`;
+        }
+
+        userScore += earnedXP;
         document.getElementById('score-val').textContent = userScore;
         userLevel = Math.floor(userScore / 100) + 1;
         document.getElementById('level-val').textContent = userLevel;
+
     } else {
         feedbackCard.classList.add('incorrect');
         document.getElementById('feedback-title').textContent = "KEPUTUSAN KELIRU!";
-        document.getElementById('feedback-text').textContent = "Terdapat indikasi anomali atau risiko yang terlewatkan.";
+        document.getElementById('feedback-text').textContent = `Tindakan yang diambil tidak sesuai. Target yang benar: ${currentCase.correctAction.toUpperCase()} dengan bobot ${targetWeight}/5.`;
     }
 
     document.getElementById('feedback-reason').textContent = currentCase.explanation;
